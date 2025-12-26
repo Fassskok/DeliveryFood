@@ -842,3 +842,11 @@ button {
 input.error {
     border: 2px solid red !important;
 }
+
+.promo-swiper {
+  width: 100%;
+}
+
+.swiper-slide {
+  border-radius: 10px;
+}
