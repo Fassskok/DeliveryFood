@@ -7,14 +7,18 @@ const closeAuth = document.querySelector('.close-auth');
 const logInForm = document.querySelector('#logInForm');
 const loginInput = document.querySelector('#login');
 const userName = document.querySelector('.user-name');
+const cardsRestaurants = document.querySelector('.cards-restaurants');
+
 
 function openModalAuth() {
     modalAuth.classList.add('is-open');
     loginInput.style.border = "1px solid #ccc";
+    disableScroll();
 }
 
 function closeModalAuth() {
     modalAuth.classList.remove('is-open');
+     enableScroll();  
 }
 
 function login(event) {
@@ -64,6 +68,77 @@ function checkAuth() {
         buttonOut.style.display = 'none';
     }
 }
+
+loginInput.addEventListener('input', () => {
+    loginInput.style.border = "1px solid #ccc";
+});
+
+modalAuth.addEventListener('click', (event) => {
+    if (event.target.classList.contains('modal-auth')) {
+        closeModalAuth();
+        enableScroll();
+    }
+});
+
+function disableScroll() {
+    document.body.dbScrollY = window.scrollY;
+
+    document.body.style.cssText = `
+        position: fixed;
+        top: -${window.scrollY}px;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        height: 100vh;
+    `;
+}
+
+function enableScroll() {
+    document.body.style.cssText = '';
+    window.scroll({ top: document.body.dbScrollY });
+}
+
+function createRestaurantCard(data) {
+  const card = document.createElement('a');
+  card.className = 'card card-restaurant';
+  card.href = 'restaurant.html';
+
+  card.insertAdjacentHTML('beforeend', `
+    <img src="${data.image}" alt="image" class="card-image">
+    <div class="card-text">
+      <div class="card-heading">
+        <h3 class="card-title">${data.name}</h3>
+        <span class="card-tag tag">${data.time}</span>
+      </div>
+      <div class="card-info">
+        <div class="rating">${data.rating}</div>
+        <div class="price">від ${data.price} ₴</div>
+        <div class="category">${data.category}</div>
+      </div>
+    </div>
+  `);
+
+  cardsRestaurants.insertAdjacentElement('beforeend', card);
+}
+
+function renderRestaurants() {
+  cardsRestaurants.textContent = '';
+  restaurantsData.forEach(createRestaurantCard);
+}
+
+renderRestaurants();
+
+cardsRestaurants.addEventListener('click', function (event) {
+  const restaurant = event.target.closest('.card-restaurant');
+  if (!restaurant) return;
+
+  const user = localStorage.getItem('user');
+
+  if (!user) {
+    event.preventDefault(); 
+    openModalAuth();
+  }
+});
 
 buttonAuth.addEventListener('click', openModalAuth);
 closeAuth.addEventListener('click', closeModalAuth);
